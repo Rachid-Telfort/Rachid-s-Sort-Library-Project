@@ -1,13 +1,13 @@
 #include"Sort.h"
 
-const short int characterLessThan(const void* const firstComparatee, const void* const secondComparatee)
+int characterAscending(const void* firstComparate, const void* secondComparate)
 {
-    if(*(char*)firstComparatee<*(char*)secondComparatee)
+    if(*(const char*)firstComparate<*(const char*)secondComparate)
     {
         return -1;
     }
 
-    else if(*(char*)firstComparatee>*(char*)secondComparatee)
+    else if(*(const char*)firstComparate>*(const char*)secondComparate)
     {
         return 1;
     }
@@ -15,14 +15,14 @@ const short int characterLessThan(const void* const firstComparatee, const void*
     return 0;
 }
 
-const short int characterGreaterThan(const void* const firstComparatee, const void* const secondComparatee)
+int characterDescending(const void* firstComparate, const void* secondComparate)
 {
-    if(*(char*)firstComparatee<*(char*)secondComparatee)
+    if(*(const char*)firstComparate<*(const char*)secondComparate)
     {
         return 1;
     }
 
-    else if(*(char*)firstComparatee>*(char*)secondComparatee)
+    else if(*(const char*)firstComparate>*(const char*)secondComparate)
     {
         return -1;
     }
@@ -30,14 +30,14 @@ const short int characterGreaterThan(const void* const firstComparatee, const vo
     return 0;
 }
 
-const short int integerLessThan(const void* const firstComparatee, const void* const secondComparatee)
+int integerAscending(const void* firstComparate, const void* secondComparate)
 {
-    if(*(int*)firstComparatee<*(int*)secondComparatee)
+    if(*(const int*)firstComparate<*(const int*)secondComparate)
     {
         return -1;
     }
 
-    else if(*(int*)firstComparatee>*(int*)secondComparatee)
+    else if(*(const int*)firstComparate>*(const int*)secondComparate)
     {
         return 1;
     }
@@ -45,14 +45,14 @@ const short int integerLessThan(const void* const firstComparatee, const void* c
     return 0;
 }
 
-const short int integerGreaterThan(const void* const firstComparatee, const void* const secondComparatee)
+int integerDescending(const void* firstComparate, const void* secondComparate)
 {
-    if(*(int*)firstComparatee<*(int*)secondComparatee)
+    if(*(const int*)firstComparate<*(const int*)secondComparate)
     {
         return 1;
     }
 
-    else if(*(int*)firstComparatee>*(int*)secondComparatee)
+    else if(*(const int*)firstComparate>*(const int*)secondComparate)
     {
         return -1;
     }
@@ -60,76 +60,70 @@ const short int integerGreaterThan(const void* const firstComparatee, const void
     return 0;
 }
 
-const short int stringLessThan(const void* const firstComparatee, const void* const secondComparatee)
+int stringAscending(const void* firstComparate, const void* secondComparate)
 {
-    return strcmp(*(const char** const)firstComparatee, *(const char** const)secondComparatee);
+    return strcmp(*(const char**)firstComparate, *(const char**)secondComparate);
 }
 
-const short int stringGreaterThan(const void* const firstComparatee, const void* const secondComparatee)
+int stringDescending(const void* firstComparate, const void* secondComparate)
 {
-    return -strcmp(*(const char** const)firstComparatee, *(const char** const)secondComparatee);
+    return -strcmp(*(const char**)firstComparate, *(const char**)secondComparate);
 }
 
-void insertionSort(const void* const sequence, const size_t sequenceSize, const size_t sequenceElementSize, const short int(*comparator)(const void* const, const void* const))
+void insertionSort(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*))
 {
-    if(sequence!=NULL&&sequenceSize>1)
+    if(sequence&&sequenceSize>1)
     {
         ///This points to the first byte of the sequence.
-        unsigned char* sequenceStart=(unsigned char*)sequence;
+        unsigned char* sequenceStart=sequence;
 
         ///This points to the first byte of the current key where we are trying to insert it in its appropriate index.
-        unsigned char* mainKeyPointer=NULL;
+        unsigned char* mainKeyPointer;
 
         ///This helps with inserting the key to insert in its appropriate slot.
-        unsigned char* otherKeyPointer=NULL;
+        unsigned char* otherKeyPointer;
 
         ///This helps with the key swap mechanism when doing the backwards linear search to place the key to insert in its appropriate index.
-        unsigned char* keySwapPointer=NULL;
+        unsigned char* keySwapPointer;
 
         ///This helps with placing the key to insert in its appropriate index.
-        unsigned char* keyPlacementPointer=NULL;
+        unsigned char* keyPlacementPointer;
 
         ///This holds the key to insert's data so as to not get lost due to the swap mechanism in the backwards linear search to place the key to insert in its appropriate slot.
         unsigned char* mainKeyBuffer=malloc(sequenceElementSize*sizeof(unsigned char));
 
         ///This is the case where memory is failed to be allocated.
-        if(mainKeyBuffer==NULL)
+        if(!mainKeyBuffer)
         {
             printf("Error: Memory could not be allocated to continue insertion sort.\n\n");
             printf("Aborting insertion sort...\n\n");
-
-            sequenceStart=NULL;
 
             return;
         }
 
         ///This keeps track of the index of the key that we are inserting in its rightful place.
-        unsigned long long int index=0;
+        size_t index=1;
 
         ///This keeps track of the other keys' indexes that are being swapped in the backwards linear search mechanism.
-        long long int subIndex=0;
+        ptrdiff_t subIndex;
 
         ///We start at the second element due to the backwards linear search for each element of the sequence to place it in its appropriate index.
         ///The first element has no elements before it so the backwards linear search is not possible as well as the fact that the first element is assumed to be sorted by default.
         ///This is due to the fact that the sub array before the key to be placed is already sorted.
-        for(index=1; index<sequenceSize; ++index)
+        for(; index<sequenceSize; ++index)
         {
             ///We are preparing the key to be inserted as well as the pointer that will point to the end of the sorted sub array before the index of the key to be inserted.
             mainKeyPointer=sequenceStart+index*sequenceElementSize;
             otherKeyPointer=sequenceStart+(index-1)*sequenceElementSize;
             memcpy(mainKeyBuffer, mainKeyPointer, sequenceElementSize);
 
-            ///Setting the sub index to be the index of the element before the index of the key to be inserted for the swap mechanism of the backwards linear search.
-            subIndex=index-1;
-
             ///We are now doing the swaps to find the appropriate index to insert the key to insert.
-            while(subIndex>=0&&comparator(mainKeyBuffer, otherKeyPointer)<0)
+            for(subIndex=index-1; subIndex>=0&&comparator(mainKeyBuffer, otherKeyPointer)<0; --subIndex)
             {
                 ///We are doing the swapping and comparing.
                 keySwapPointer=otherKeyPointer+sequenceElementSize;
                 memcpy(keySwapPointer, otherKeyPointer, sequenceElementSize);
                 otherKeyPointer-=sequenceElementSize;
-                --subIndex;
             }
 
             ///We place the key to be inserted at its appropriate index.
@@ -138,53 +132,44 @@ void insertionSort(const void* const sequence, const size_t sequenceSize, const 
         }
 
         ///Cleaning up resources since the sorting is done.
-        sequenceStart=NULL;
-        mainKeyPointer=NULL;
-        otherKeyPointer=NULL;
-        keySwapPointer=NULL;
-        keyPlacementPointer=NULL;
-
         free(mainKeyBuffer);
-        mainKeyBuffer=NULL;
     }
 }
 
-void selectionSort(const void* const sequence, const size_t sequenceSize, const size_t sequenceElementSize, const short int(*comparator)(const void* const, const void* const))
+void selectionSort(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*))
 {
-    if(sequence!=NULL&&sequenceSize>1)
+    if(sequence&&sequenceSize>1)
     {
         ///This points to the first byte of the sequence.
-        unsigned char* sequenceStart=(unsigned char*)sequence;
+        unsigned char* sequenceStart=sequence;
 
         ///This points to the main key that we are selecting against for sorting purposes.
-        unsigned char* mainKeyPointer=NULL;
+        unsigned char* mainKeyPointer;
 
         ///This helps with the key swap mechanism that occurs if or when we find the appropriate key to select against the main key.
-        unsigned char* swapKeyPointer=NULL;
+        unsigned char* swapKeyPointer;
 
         ///This helps with comparing keys when searching for a key to select against the main key.
-        unsigned char* otherKeyPointer=NULL;
+        unsigned char* otherKeyPointer;
 
         ///This holds the current key data for swapping the current key with a key found, if one is found, to be selected against the main key
         ///so as to not lose the main key data.
         unsigned char* mainKeyBuffer=malloc(sequenceElementSize*sizeof(unsigned char));
 
         ///This is the case where memory is failed to be allocated.
-        if(mainKeyBuffer==NULL)
+        if(!mainKeyBuffer)
         {
             printf("Error: Memory could not be allocated to continue selection sort.\n\n");
             printf("Aborting selection sort...\n\n");
-
-            sequenceStart=NULL;
 
             return;
         }
 
         ///This helps keep track of the index of the main key that is being selected against.
-        unsigned long long int index=0;
+        size_t index=0;
 
         ///This helps keep track of the other keys that are being selected against the main key.
-        unsigned long long int subIndex=0;
+        size_t subIndex;
 
         ///The reason we end at the second-to-last element and not the last element in the sequence is because due to the selection mechanism, two elements must be selected against
         ///each other in each iteration, i.e. the main element and one of the other elements in the sub array after the main element. That means that the last element in the sequence that will have another key to be selected against it is the second-to-last element
@@ -225,46 +210,324 @@ void selectionSort(const void* const sequence, const size_t sequenceSize, const 
         }
 
         ///Cleaning up resources since the sorting is done.
-        sequenceStart=NULL;
-        mainKeyPointer=NULL;
-        swapKeyPointer=NULL;
-        otherKeyPointer=NULL;
-
         free(mainKeyBuffer);
-        mainKeyBuffer=NULL;
     }
 }
 
-void mergeSort(const void* const sequence, const size_t sequenceSize, const size_t sequenceElementSize, const short int(*comparator)(const void* const, const void* const))
+void bubbleSort(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*))
 {
-    if(sequence!=NULL&&sequenceSize>1)
+    if(sequence&&sequenceSize>1)
     {
-        divide(sequence, sequenceElementSize, 0, sequenceSize, comparator);
+        ///This points to the first byte of the sequence.
+        unsigned char* sequenceStart=sequence;
+
+        ///This points to the main key that we are checking against, based on the comparator function passed, for sorting purposes.
+        unsigned char* mainKeyPointer;
+
+        ///This helps with the key swap mechanism that occurs if or when we find the appropriate key to check against the main key.
+        unsigned char* swapKeyPointer;
+
+        ///This holds the current key data for swapping the current key with a key found, if one is found, to be checked against the main key
+        ///so as to not lose the main key data.
+        unsigned char* mainKeyBuffer=malloc(sequenceElementSize*sizeof(unsigned char));
+
+        ///This is the case where memory is failed to be allocated.
+        if(!mainKeyBuffer)
+        {
+            printf("Error: Memory could not be allocated to continue bubble sort.\n\n");
+            printf("Aborting bubble sort...\n\n");
+
+            return;
+        }
+
+        ///This helps keep track of the index of the main key that is being checked against.
+        size_t index=0;
+
+        ///This helps keep track of the other keys, to potentially swap with the main key, that are being checked against the main key.
+        size_t subIndex;
+
+        ///The reason we loop until the second-to-last element is because once we get to the last element
+        ///all other elements before it have already been checked against it. That means once we get to
+        ///the last element, the sequence is already in sorted order.
+        for(; index<sequenceSize-1; ++index)
+        {
+            ///In this loop, we go backwards in the sequence starting with the last element
+            ///and swap elements as appropriate. The reason we stop at the second element is because
+            ///the first element has no other elements before it to check against and/or to swap with.
+            for(subIndex=sequenceSize-1; subIndex>=index+1; --subIndex)
+            {
+                ///Setting the main key pointer to point to the main key to be checked against.
+                mainKeyPointer=sequenceStart+subIndex*sequenceElementSize;
+
+                ///Setting up the swap pointer to point to the key before the main key for
+                ///comparison purposes.
+                swapKeyPointer=sequenceStart+(subIndex-1)*sequenceElementSize;
+
+                ///We perform the swap mechanism if a key is found to swap with the main key
+                ///based on the comparator function passed.
+                if(comparator(mainKeyPointer, swapKeyPointer)<0)
+                {
+                    memcpy(mainKeyBuffer, mainKeyPointer, sequenceElementSize);
+                    memcpy(mainKeyPointer, swapKeyPointer, sequenceElementSize);
+                    memcpy(swapKeyPointer, mainKeyBuffer, sequenceElementSize);
+                }
+            }
+        }
+
+        ///Cleaning up resources since the sorting is done.
+        free(mainKeyBuffer);
     }
 }
 
-void divide(const void* const sequence, const size_t sequenceElementSize, const size_t subSequenceStart, const size_t subSequenceEnd, const short int(*comparator)(const void* const, const void* const))
+void heapSort(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*))
+{
+    if(sequence&&sequenceSize>1)
+    {
+        ///This points to the first byte of the sequence.
+        unsigned char* sequenceStart=sequence;
+
+        ///This points to the main key in the array heap that we are checking against its parent element for sorting purposes.
+        unsigned char* mainKeyPointer;
+
+        ///This helps with the key swap mechanism that occurs if or when the parent element violates the heap property in relation to the main key.
+        unsigned char* swapKeyPointer;
+
+        ///This holds the main key data for swapping the main key's parent element with the main key, if the heap property is violated based on the comparator,
+        ///so as to not lose the main key data.
+        unsigned char* mainKeyBuffer=malloc(sequenceElementSize*sizeof(unsigned char));
+
+        ///This is the case where memory is failed to be allocated.
+        if(!mainKeyBuffer)
+        {
+            printf("Error: Memory could not be allocated to continue heap sort.\n\n");
+            printf("Aborting heap sort...\n\n");
+
+            return;
+        }
+
+        ///This helps keep track of the index of the main key that is being checked against its parent element.
+        size_t index=sequenceSize-1;
+
+        ///This helps with keeping track of the elements remaining in the array heap during the sorting mechanism.
+        size_t subIndex;
+
+        ///This for loop first creates the array heap based on the comparator passed.
+        ///We go backwards starting at the last element of the array, similar to a binary heap, and check if its parent
+        ///violates the heap property. If that is the case, then we swap the current element and its parent. Since this is a
+        ///zero-index based array heap, at every element these properties hold true: given an element at index i,
+        ///its parent element can be found at index (i-1)/2, its left child element can be found at index 2i+1, and its
+        ///right child element can be found at index 2i+2.
+        for(; index>0; --index)
+        {
+            ///We set the main key pointer to the current element we are checking against its parent.
+            mainKeyPointer=sequenceStart+index*sequenceElementSize;
+
+            ///We set the swap key pointer to the current element's parent element.
+            swapKeyPointer=sequenceStart+(index-1)/2*sequenceElementSize;
+
+            ///We perform the swap mechanism if the main key's parent element violates the heap property
+            ///based on the comparator.
+            if(comparator(mainKeyPointer, swapKeyPointer)>0)
+            {
+                memcpy(mainKeyBuffer, mainKeyPointer, sequenceElementSize);
+                memcpy(mainKeyPointer, swapKeyPointer, sequenceElementSize);
+                memcpy(swapKeyPointer, mainKeyBuffer, sequenceElementSize);
+            }
+        }
+
+        ///We set up the index to point to the last element of the heap array to get ready for the actual sorting
+        ///and potential future swaps.
+        index=sequenceSize-1;
+
+        for(; index>0; --index)
+        {
+            ///We set up the main key pointer to point to the first element of the elements remaining in the heap.
+            ///This element will be the next element, backwards, of the final sorted array.
+            mainKeyPointer=sequenceStart;
+
+            ///We set up the swap key pointer to point to the last element of the elements remaining in the heap. We will swap
+            ///this element with the element pointed to by the main key pointer for the sorting to work appropriately.
+            swapKeyPointer=sequenceStart+index*sequenceElementSize;
+
+            ///These three line is where we perform the aforementioned swap mechanism.
+            memcpy(mainKeyBuffer, mainKeyPointer, sequenceElementSize);
+            memcpy(mainKeyPointer, swapKeyPointer, sequenceElementSize);
+            memcpy(swapKeyPointer, mainKeyBuffer, sequenceElementSize);
+
+            ///We set up the subIndex size_t variable to the index of the last element of the array heap.
+            ///This will help with reorganizing the remaining elements in the array heap to
+            ///restore the heap property, based on the comparator, for the next iteration of the sorting mechanism.
+            subIndex=index-1;
+
+            ///This for loop rearranges the remaining elements in the array heap in order to restore the heap property
+            ///to get ready for the next iteration of the sorting mechanism. This is similar to the loop that made the initial
+            ///array heap before the sorting mechanism took place.
+            for(; subIndex>0; --subIndex)
+            {
+                mainKeyPointer=sequenceStart+subIndex*sequenceElementSize;
+                swapKeyPointer=sequenceStart+(subIndex-1)/2*sequenceElementSize;
+
+                if(comparator(mainKeyPointer, swapKeyPointer)>0)
+                {
+                    memcpy(mainKeyBuffer, mainKeyPointer, sequenceElementSize);
+                    memcpy(mainKeyPointer, swapKeyPointer, sequenceElementSize);
+                    memcpy(swapKeyPointer, mainKeyBuffer, sequenceElementSize);
+                }
+            }
+        }
+
+        ///Cleaning up resources since the sorting is done.
+        free(mainKeyBuffer);
+    }
+}
+
+void quickSort(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*))
+{
+    if(sequence&&sequenceSize>1)
+    {
+        quickSortConquerCombine(sequence, sequenceElementSize, 0, sequenceSize, comparator);
+    }
+}
+
+size_t quickSortDivide(void* sequence, size_t sequenceElementSize, size_t subSequenceStart, size_t subSequenceEnd, int(*comparator)(const void*, const void*))
+{
+    ///This points to the first byte of the sequence.
+    unsigned char* sequenceStart=sequence;
+
+    ///This will point to the key that will be used as the pivot in the partitioning mechanism.
+    ///We set the main key pointer to point to the last element in the array.
+    ///This element will be used as the pivot for the rest of this function.
+    unsigned char* mainKeyPointer=sequenceStart+(subSequenceEnd-1)*sequenceElementSize;
+
+    ///This will help with the key swap mechanism that occurs if or when we find the appropriate key to partition in regards to the pivot based on the comparator.
+    unsigned char* swapKeyPointer;
+
+    ///This will also help with the key swap mechanism that occurs if or when we find the appropriate key to partition in regards to the pivot based on the comparator.
+    unsigned char* otherKeyPointer;
+
+    ///This will hold the swap key data for swapping the key pointed to by the swap key pointer key with a key found, if one is found, to be selected against the swap key
+    ///so as to not lose the swap key data.
+    unsigned char* mainKeyBuffer=malloc(sequenceElementSize*sizeof(unsigned char));
+
+    ///This is the case where memory is failed to be allocated.
+    if(!mainKeyBuffer)
+    {
+        printf("Error: Memory could not be allocated to continue quick sort.\n\n");
+        printf("Aborting quick sort...\n\n");
+
+        ///We return zero here because it is the smallest number of the size_t integral data type.
+        ///We cannot return a negative number due to the size_t integral data type being unsigned.
+        return 0;
+    }
+
+    ///We set up the index size_t variable to reference the last element of the array, i.e. the pivot element
+    ///that we will partition the other elements of the subsequence against.
+    ptrdiff_t index=subSequenceStart-1;
+
+    ///We set up the subIndex size_t variable to reference the start of the subsequence
+    ///in order to partition all the elements before the pivot appropriately.
+    size_t subIndex=subSequenceStart;
+
+    ///This for loop will go through all the elements before the pivot and compare them against
+    ///the pivot in order to partition the other elements appropriately in the subsequence.
+    for(; subIndex<subSequenceEnd-1; ++subIndex)
+    {
+        ///We set up the swap key pointer to point to the current indexed element
+        ///in the subsequence before the pivot.
+        swapKeyPointer=sequenceStart+subIndex*sequenceElementSize;
+
+        ///Here we check if the pivot element goes against the current element.
+        ///If it does, then we swap the current element with the element that is referenced by the
+        ///index size_t variable so all elements that go before and after the pivot are at their appropriate
+        ///places when the loop is done.
+        if(comparator(mainKeyPointer, swapKeyPointer)>=0)
+        {
+            ///We increase the index size_t variable to keep it within bounds of the
+            ///subsequence and to help with the swapping mechanism.
+            ++index;
+
+            ///We set the other key pointer to point to the element referenced by the index
+            ///size_t variable so as to be able to employ the swapping mechanism.
+            otherKeyPointer=sequenceStart+index*sequenceElementSize;
+
+            ///Here we employ the swapping mechanism.
+            memcpy(mainKeyBuffer, otherKeyPointer, sequenceElementSize);
+            memcpy(otherKeyPointer, swapKeyPointer, sequenceElementSize);
+            memcpy(swapKeyPointer, mainKeyBuffer, sequenceElementSize);
+        }
+    }
+
+    ///Here we assign the swap key pointer to point to the element after the element
+    ///referenced by the index size_t variable. The reason we point to the element after the element referenced after
+    ///the index size_t variable is because we want to keep the pivot element within bounds of the subsequence which can happen
+    ///if a swap never occurred in the above for loop.
+    swapKeyPointer=sequenceStart+(index+1)*sequenceElementSize;
+
+    ///Here we swap the pivot element and the element pointed to by the swap key pointer so we can place the pivot
+    ///in its appropriate spot in the now-partitioned subsequence.
+    memcpy(mainKeyBuffer, mainKeyPointer, sequenceElementSize);
+    memcpy(mainKeyPointer, swapKeyPointer, sequenceElementSize);
+    memcpy(swapKeyPointer, mainKeyBuffer, sequenceElementSize);
+
+    ///Cleaning up resources since the partitioning is done.
+    free(mainKeyBuffer);
+
+    ///We return the appropriate size_t index of the element that is the pivot.
+    return index+1;
+}
+
+void quickSortConquerCombine(void* sequence, size_t sequenceElementSize, size_t subSequenceStart, size_t subSequenceEnd, int(*comparator)(const void*, const void*))
 {
     ///We check if the current subsequence is greater than one element.
     ///If it is not, then we do not need to break the subsequence down and sort it
     ///as the sequence is already sorted.
-    if(subSequenceStart<subSequenceEnd-1)
+    if(subSequenceEnd>0&&subSequenceStart<subSequenceEnd-1)
     {
-        ///Here we breakdown the first half of the subsequence recursively until we reach the base case of the subsequence having one element.
-        divide(sequence, sequenceElementSize, subSequenceStart, (subSequenceStart+subSequenceEnd)/2, comparator);
+        ///We first get the pivot which is the index that the conquer and combine step will use as a reference
+        ///when breaking the initial array into smaller sequences for further partitioning. Getting the pivot is the
+        ///divide step of the divide, conquer, and combine paradigm in regards to quick sort.
+        size_t pivot=quickSortDivide(sequence, sequenceElementSize, subSequenceStart, subSequenceEnd, comparator);
 
-        ///Here we breakdown the second half of the subsequence recursively until we reach the base case of the subsequence having one element.
-        divide(sequence, sequenceElementSize, (subSequenceStart+subSequenceEnd)/2, subSequenceEnd, comparator);
+        ///Based on the pivot, we further break the array down into all elements less than or equal to the pivot until
+        ///we have one-element sub arrays and recurse back up, probably making additional partitions in the process, finishing with the initial array being sorted.
+        quickSortConquerCombine(sequence, sequenceElementSize, subSequenceStart, pivot, comparator);
 
-        ///Here we combine the two halves of the subsequence by comparing the elements in each half with the result being the sorted subsequence.
-        conquerAndCombine(sequence, sequenceElementSize, subSequenceStart, (subSequenceStart+subSequenceEnd)/2, subSequenceEnd, comparator);
+        ///Based on the pivot, we further break the array down into all elements greater than the pivot until
+        ///we have one-element sub arrays and recurse back up, probably making additional partitions in the process, finishing with the initial array being sorted.
+        quickSortConquerCombine(sequence, sequenceElementSize, pivot, subSequenceEnd, comparator);
     }
 }
 
-void conquerAndCombine(const void* const sequence, const size_t sequenceElementSize, const size_t subSequenceStart, const size_t subSequenceMiddle, const size_t subSequenceEnd, const short int(*comparator)(const void* const, const void* const))
+void mergeSort(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*))
+{
+    if(sequence&&sequenceSize>1)
+    {
+        mergeSortDivide(sequence, sequenceElementSize, 0, sequenceSize, comparator);
+    }
+}
+
+void mergeSortDivide(void* sequence, size_t sequenceElementSize, size_t subSequenceStart, size_t subSequenceEnd, int(*comparator)(const void*, const void*))
+{
+    ///We check if the current subsequence is greater than one element.
+    ///If it is not, then we do not need to break the subsequence down and sort it
+    ///as the sequence is already sorted.
+    if(subSequenceEnd>0&&subSequenceStart<subSequenceEnd-1)
+    {
+        ///Here we breakdown the first half of the subsequence recursively until we reach the base case of the subsequence having one element.
+        mergeSortDivide(sequence, sequenceElementSize, subSequenceStart, (subSequenceStart+subSequenceEnd)/2, comparator);
+
+        ///Here we breakdown the second half of the subsequence recursively until we reach the base case of the subsequence having one element.
+        mergeSortDivide(sequence, sequenceElementSize, (subSequenceStart+subSequenceEnd)/2, subSequenceEnd, comparator);
+
+        ///Here we combine the two halves of the subsequence by comparing the elements in each half with the result being the sorted subsequence.
+        mergeSortConquerCombine(sequence, sequenceElementSize, subSequenceStart, (subSequenceStart+subSequenceEnd)/2, subSequenceEnd, comparator);
+    }
+}
+
+void mergeSortConquerCombine(void* sequence, size_t sequenceElementSize, size_t subSequenceStart, size_t subSequenceMiddle, size_t subSequenceEnd, int(*comparator)(const void*, const void*))
 {
     ///This points to the first byte of the sequence.
-    unsigned char* sequenceStart=(unsigned char*)sequence;
+    unsigned char* sequenceStart=sequence;
 
     ///This keeps track of the amount of elements that will be in the helper sequence
     ///that will contain all the elements from the first half of the unsorted subsequence.
@@ -278,12 +541,10 @@ void conquerAndCombine(const void* const sequence, const size_t sequenceElementS
     unsigned char* leftSubSequence=malloc(leftSubSequenceSize*sequenceElementSize*sizeof(unsigned char));
 
     ///This is the case where memory is failed to be allocated for the first helper sequence.
-    if(leftSubSequence==NULL)
+    if(!leftSubSequence)
     {
         printf("Error: Memory could not be allocated in the first helper sequence to continue merge sort.\n\n");
         printf("Aborting merge sort...\n\n");
-
-        sequenceStart=NULL;
 
         return;
     }
@@ -292,41 +553,38 @@ void conquerAndCombine(const void* const sequence, const size_t sequenceElementS
     unsigned char* rightSubSequence=malloc(rightSubSequenceSize*sequenceElementSize*sizeof(unsigned char));
 
     ///This is the case where memory is failed to be allocated for the second helper sequence.
-    if(rightSubSequence==NULL)
+    if(!rightSubSequence)
     {
         printf("Error: Memory could not be allocated in the second helper sequence to continue merge sort.\n\n");
         printf("Aborting merge sort...\n\n");
 
-        sequenceStart=NULL;
-
         free(leftSubSequence);
-        leftSubSequence=NULL;
 
         return;
     }
 
     ///This helps with copying the data from the subsequence into the helper sequences
     ///as well as sorting the subsequence.
-    unsigned char* sequencePointer=NULL;
+    unsigned char* sequencePointer;
 
     ///This helps with copying data from the subsequence into the first helper sequence
     ///as well as to keep track of the current element in the first helper sequence
     ///when sorting the subsequence.
-    unsigned char* leftSubSequencePointer=NULL;
+    unsigned char* leftSubSequencePointer;
 
     ///This helps with copying data from the subsequence into the second helper sequence
     ///as well as to keep track of the current element in the second helper sequence
     ///when sorting the subsequence.
-    unsigned char* rightSubSequencePointer=NULL;
+    unsigned char* rightSubSequencePointer;
 
     ///This helps with keeping track of the current element in the first helper sequence.
-    unsigned long long int leftIndex=0;
+    size_t leftIndex=0;
 
     ///This helps with keeping track of the current element in the second helper sequence.
-    unsigned long long int rightIndex=0;
+    size_t rightIndex=0;
 
     ///This helps keep track of the current element in the subsequence.
-    unsigned long long int subSequenceIndex=0;
+    size_t subSequenceIndex=0;
 
     ///We set up the sequencePointer to point to the first byte of the subsequence.
     sequencePointer=sequenceStart+subSequenceStart*sequenceElementSize;
@@ -386,8 +644,8 @@ void conquerAndCombine(const void* const sequence, const size_t sequenceElementS
         ///to the subsequence as the subsequence becomes sorted.
         if(leftIndex==leftSubSequenceSize)
         {
-             memcpy(sequencePointer, rightSubSequencePointer, sequenceElementSize);
-             rightSubSequencePointer+=sequenceElementSize;
+            memcpy(sequencePointer, rightSubSequencePointer, sequenceElementSize);
+            rightSubSequencePointer+=sequenceElementSize;
             ++rightIndex;
         }
 
@@ -428,41 +686,101 @@ void conquerAndCombine(const void* const sequence, const size_t sequenceElementS
     }
 
     ///Cleaning up resources since the sorting is done.
-    sequenceStart=NULL;
-
     free(leftSubSequence);
-    leftSubSequence=NULL;
-
     free(rightSubSequence);
-    rightSubSequence=NULL;
-
-    sequencePointer=NULL;
-    leftSubSequencePointer=NULL;
-    rightSubSequencePointer=NULL;
 }
 
-void binaryInsertionSort(const void* const sequence, const size_t sequenceSize, const size_t sequenceElementSize, const short int(*comparator)(const void* const, const void* const))
+void recursiveInsertionSort(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*))
 {
-    if(sequence!=NULL&&sequenceSize>1)
+    if(sequence&&sequenceSize>1)
+    {
+        ///Here we recurse until we get down to one-element sub arrays. Then we recurse up employing the
+        ///backwards linear search and swap mechanisms of merge sort on the sub arrays until the initial
+        ///array is sorted.
+        recursiveInsertionSort(sequence, sequenceSize-1, sequenceElementSize, comparator);
+
+        ///This points to the first byte of the sequence.
+        unsigned char* sequenceStart=sequence;
+
+        ///This holds the key to insert's data so as to not get lost due to the swap mechanism in the backwards linear search to place the key to insert in its appropriate slot.
+        unsigned char* mainKeyBuffer=malloc(sequenceElementSize*sizeof(unsigned char));
+
+        ///This is the case where memory is failed to be allocated.
+        if(!mainKeyBuffer)
+        {
+            printf("Error: Memory could not be allocated to continue recursive insertion sort.\n\n");
+            printf("Aborting recursive insertion sort...\n\n");
+
+            return;
+        }
+
+        ///We assign the index size_t variable to reference the last element of the subsequence.
+        ///This is necessary as we plan to do a backwards linear search of the subsequence in order to put the element chosen
+        /// to be inserted at its appropriate spot in the subsequence.
+        size_t index=sequenceSize-1;
+
+        ///We assign the subIndex size_t variable to reference the element before the element referenced by the
+        ///index size_t variable as we will start the backwards linear search at the subIndex size_t variable.
+        ptrdiff_t subIndex=index-1;
+
+        ///We set up the main key pointer to point to the element referenced by the index size_t variable.
+        ///This will be our element chosen to be inserted.
+        unsigned char* mainKeyPointer=sequenceStart+index*sequenceElementSize;
+
+        ///We set up the other key pointer to point to the element referenced by the subIndex size_t variable.
+        ///This will help us in the backwards linear search to place the key to be inserted in its appropriate spot.
+        unsigned char* otherKeyPointer=sequenceStart+subIndex*sequenceElementSize;
+
+        ///This will help with the swapping mechanism that will be done in the backwards linear search
+        ///to place the key to be inserted in its appropriate index.
+        unsigned char* keySwapPointer;
+
+        ///This will help with placing the key to insert in its appropriate spot after the backwards linear search is done.
+        unsigned char* keyPlacementPointer;
+
+        ///We are preparing the key to be inserted by putting it in a buffer in case the original key to be inserted is overwritten.
+        memcpy(mainKeyBuffer, mainKeyPointer, sequenceElementSize);
+
+        ///We are now doing the swaps to find the appropriate index to insert the key to insert.
+        for(; subIndex>=0&&comparator(mainKeyBuffer, otherKeyPointer)<0; --subIndex)
+        {
+            ///We are doing the swapping and comparing.
+            keySwapPointer=otherKeyPointer+sequenceElementSize;
+            memcpy(keySwapPointer, otherKeyPointer, sequenceElementSize);
+            otherKeyPointer-=sequenceElementSize;
+        }
+
+        ///We place the key to be inserted at its appropriate index.
+        keyPlacementPointer=otherKeyPointer+sequenceElementSize;
+        memcpy(keyPlacementPointer, mainKeyBuffer, sequenceElementSize);
+
+        ///Cleaning up resources since the sorting is done.
+        free(mainKeyBuffer);
+    }
+}
+
+void binaryInsertionSort(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*))
+{
+    if(sequence&&sequenceSize>1)
     {
         ///This points to the first byte of the sequence.
-        unsigned char* sequenceStart=(unsigned char*)sequence;
+        unsigned char* sequenceStart=sequence;
 
         ///This points to the first byte of the current key where
         ///we are trying to insert it in its appropriate index.
-        unsigned char* mainKeyPointer=NULL;
+        unsigned char* mainKeyPointer;
 
         ///This helps with inserting the key to insert
         ///in its appropriate slot.
-        unsigned char* otherKeyPointer=NULL;
+        unsigned char* otherKeyPointer;
 
-        ///This helps with the key swap mechanism when doing the backwards linear search
+        ///This helps with the key swap mechanism when doing the backwards binary search
         ///to place the key to insert in its appropriate index.
-        unsigned char* keySwapPointer=NULL;
+        unsigned char* keySwapPointer;
 
         ///This helps with placing the key to insert
         ///in its appropriate index.
-        unsigned char* keyPlacementPointer=NULL;
+        unsigned char* keyPlacementPointer;
 
         ///This holds the key to insert's data so as to not get lost
         ///due to the swap mechanism in the backwards linear search to
@@ -470,35 +788,33 @@ void binaryInsertionSort(const void* const sequence, const size_t sequenceSize, 
         unsigned char* mainKeyBuffer=malloc(sequenceElementSize*sizeof(unsigned char));
 
         ///This is the case where memory is failed to be allocated.
-        if(mainKeyBuffer==NULL)
+        if(!mainKeyBuffer)
         {
             printf("Error: Memory could not be allocated to continue binary insertion sort.\n\n");
             printf("Aborting binary insertion sort...\n\n");
-
-            sequenceStart=NULL;
 
             return;
         }
 
         ///This keeps track of the index of the key that
         ///we are inserting in its rightful place.
-        unsigned long long int index=0;
+        size_t index=1;
 
         ///This keeps track of the other keys' indexes
         ///that are being swapped in the backwards linear search mechanism.
-        long long int subIndex=0;
+        ptrdiff_t subIndex;
 
         ///This keeps track of the first key's index in the
         ///subsequence to be binary searched.
-        long long int startIndex=0;
+        ptrdiff_t startIndex;
 
         ///This keeps track of the index of the key
         ///that is being compared against in the binary search mechanism.
-        long long int middleIndex=0;
+        ptrdiff_t middleIndex;
 
         ///This keeps track of the last key's index in the
         ///subsequence to be binary searched.
-        long long int endIndex=0;
+        ptrdiff_t endIndex;
 
         ///We start at the second element due to the backwards linear search
         ///for each element of the sequence to place it in its appropriate index
@@ -506,7 +822,7 @@ void binaryInsertionSort(const void* const sequence, const size_t sequenceSize, 
         ///The first element has no elements before it so the backwards linear search
         ///is not possible as well as the fact that the first element is assumed to be sorted by default.
         ///This is due to the fact that the sub array before the key to be placed is already sorted.
-        for(index=1; index<sequenceSize; ++index)
+        for(; index<sequenceSize; ++index)
         {
             ///We are preparing the key that will be inserted in its rightful place
             ///in the sequence.
@@ -605,22 +921,15 @@ void binaryInsertionSort(const void* const sequence, const size_t sequenceSize, 
             ///in its appropriate slot.
             otherKeyPointer=sequenceStart+(index-1)*sequenceElementSize;
 
-            ///Setting the sub index to be the index of the element
-            ///before the index of the key
-            ///to be inserted for the swap mechanism
-            ///of the backwards linear search.
-            subIndex=index-1;
-
             ///We are now doing the swaps to get to the appropriate
             ///index, previously found in the binary search mechanism,
             ///to insert the key to insert.
-            while(subIndex>=middleIndex)
+            for(subIndex=index-1; subIndex>=middleIndex; --subIndex)
             {
                 ///We are doing the swapping.
                 keySwapPointer=otherKeyPointer+sequenceElementSize;
                 memcpy(keySwapPointer, otherKeyPointer, sequenceElementSize);
                 otherKeyPointer-=sequenceElementSize;
-                --subIndex;
             }
 
             ///We place the key to be inserted at its appropriate index.
@@ -629,32 +938,25 @@ void binaryInsertionSort(const void* const sequence, const size_t sequenceSize, 
         }
 
         ///Cleaning up resources since the sorting is done.
-        sequenceStart=NULL;
-        mainKeyPointer=NULL;
-        otherKeyPointer=NULL;
-        keySwapPointer=NULL;
-        keyPlacementPointer=NULL;
-
         free(mainKeyBuffer);
-        mainKeyBuffer=NULL;
     }
 }
 
-void sortTest(const void* const sequence, const size_t sequenceSize, const size_t sequenceElementSize, const short int(*comparator)(const void* const, const void* const), void(*sortFunction)(const void* const, const size_t, const size_t, const short int(*)(const void* const, const void* const)))
+void sortTest(void* sequence, size_t sequenceSize, size_t sequenceElementSize, int(*comparator)(const void*, const void*), void(*sorter)(void*, size_t, size_t, int(*)(const void*, const void*)))
 {
     ///This function serves as a unit test to see if the provided sort function works correctly based on the provided arguments.
 
     printf("Testing provided sort function...\n\n");
 
     ///These if statements list potential errors that can occur that could stop continuation of the test.
-    if(sequence==NULL)
+    if(!sequence)
     {
         printf("Error: Cannot continue with the provided sort test due to null sequence.\n\nExiting sort test...\n\n");
 
         return;
     }
 
-    else if(sequenceSize==0)
+    else if(!sequenceSize)
     {
         printf("Error: Cannot continue with the provided sort test due to zero-element sequence.\n\nExiting sort test...\n\n");
 
@@ -670,35 +972,27 @@ void sortTest(const void* const sequence, const size_t sequenceSize, const size_
 
     printf("Entering provided sort test...\n\n");
 
-    sortFunction(sequence, sequenceSize, sequenceElementSize, comparator);
+    sorter(sequence, sequenceSize, sequenceElementSize, comparator);
 
     ///Setting up pointers to test if the provided sort function worked correctly by using the comparator provided.
-    unsigned char* firstComparatee=(unsigned char*)sequence;
-    unsigned char* secondComparatee=firstComparatee+sequenceElementSize;
+    unsigned char* firstComparate=sequence;
+    unsigned char* secondComparate=firstComparate+sequenceElementSize;
 
     ///This is used to help with iterating over the sequence.
-    unsigned long long int index=0;
-    for(index=1; index<sequenceSize; ++index)
+    size_t index=1;
+    for(; index<sequenceSize; ++index)
     {
-        if(comparator(firstComparatee, secondComparatee)>0)
+        if(comparator(firstComparate, secondComparate)>0)
         {
             printf("Provided sort failed!\n\nExiting sort test...\n\n");
-
-            ///Cleaning up resources after failure.
-            firstComparatee=NULL;
-            secondComparatee=NULL;
 
             return;
         }
 
         ///We are moving to the other elements in the sequence for comparison.
-        firstComparatee+=sequenceElementSize;
-        secondComparatee+=sequenceElementSize;
+        firstComparate+=sequenceElementSize;
+        secondComparate+=sequenceElementSize;
     }
 
     printf("Provided sort succeeded!\n\nExiting sort test...\n\n");
-
-    ///Cleaning up resources after success.
-    firstComparatee=NULL;
-    secondComparatee=NULL;
 }

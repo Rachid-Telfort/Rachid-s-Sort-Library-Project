@@ -1,58 +1,31 @@
 #include"Sort.h"
 
-int main(int argc, char* argv[])
+int main(void)
 {
-    char a[]="qwertyuioplkjhgfdsazcxvnbm";
-    int b[]={0, 1, 2, 6, 7, 3, 0, 0, 78, 99, 100};
-    char* c[]={"Rachid Telfort", "Jammil Telfort", "Isaac Monterose", "Marie Telfort", "Samus Aran", "Geralt of Rivia"};
+    ///These are sample arrays that will show how to use the sort test.
+    ///These sample arrays will also test for the correctness of the sorting algorithms.
+    char A[]={'q', 'w', 'e', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f'};
+    int B[]={1, 3, 5, 7, 9, 11, 13, 15, 17, 100, 98, 96, 94, 92, 90};
+    const char* C[]={"Java", "C++", "Python", "PHP", "Go", "C"};
+    char D[]={'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', 'z'};
+    int E[]={1, 1, 1, 1, 1, 1, 2, 4, 4, 4, 4, 4, 5, 5, 6, 80, 80, 81};
+    const char* F[]={"Kratos", "Aloy", "Atreus", "Geralt of Rivia", "Siri", "Jak and Daxter", "John Snow"};
+    char G[]={'1', '2', '@', '#', '$', '4', '5', '6', '7', '*', '8'};
+    int H[]={2, 4, 6, 8, 10, 12, -2, -4, -6, -8, -10, 12, 14, 16, 18, 20, -100};
+    const char* I[]={"Attack on Titan", "Dragon Ball Z", "Teen Titans", "God of War", "Horizon Zero Dawn", "Shape Dodger", "Space Figher Awesome!"};
 
-    printf("Entering insertion sort tests...\n\n");
-    sortTest(a, sizeof(a)/sizeof(a[0])-1, sizeof(a[0]), characterLessThan, insertionSort);
-    sortTest(a, sizeof(a)/sizeof(a[0])-1, sizeof(a[0]), characterGreaterThan, insertionSort);
-    sortTest(b, sizeof(b)/sizeof(b[0]), sizeof(b[0]), integerLessThan, insertionSort);
-    sortTest(b, sizeof(b)/sizeof(b[0]), sizeof(b[0]), integerGreaterThan, insertionSort);
-    sortTest(c, sizeof(c)/sizeof(c[0]), sizeof(c[0]), stringLessThan, insertionSort);
-    sortTest(c, sizeof(c)/sizeof(c[0]), sizeof(c[0]), stringGreaterThan, insertionSort);
-    printf("Exiting insertion sort tests...\n\n\n\n");
+    ///These will show some sample sort tests.
+    sortTest(A, sizeof(A)/sizeof(char), sizeof(char), characterAscending, insertionSort);
+    sortTest(B, sizeof(B)/sizeof(int), sizeof(int), integerAscending, selectionSort);
+    sortTest(C, sizeof(C)/sizeof(const char*), sizeof(const char*), stringAscending, bubbleSort);
+    sortTest(D, sizeof(D)/sizeof(char), sizeof(char), characterDescending, heapSort);
+    sortTest(E, sizeof(E)/sizeof(int), sizeof(int), integerDescending, mergeSort);
+    sortTest(F, sizeof(F)/sizeof(const char*), sizeof(const char*), stringDescending, recursiveInsertionSort);
+    sortTest(G, sizeof(G)/sizeof(char), sizeof(char), characterAscending, binaryInsertionSort);
+    sortTest(H, sizeof(H)/sizeof(int), sizeof(int), integerAscending, quickSort);
 
-    char d[]="AsdfghjklOP!23";
-    int e[]={0, 5, 4, 2, 1, 4, 7, 567};
-    char* f[]={"C++", "Java", "Python", "Swift", "Go", "C"};
-
-    printf("Entering selection sort tests...\n\n");
-    sortTest(d, sizeof(d)/sizeof(d[0])-1, sizeof(d[0]), characterLessThan, selectionSort);
-    sortTest(d, sizeof(d)/sizeof(d[0])-1, sizeof(d[0]), characterGreaterThan, selectionSort);
-    sortTest(e, sizeof(e)/sizeof(e[0]), sizeof(e[0]), integerLessThan, selectionSort);
-    sortTest(e, sizeof(e)/sizeof(e[0]), sizeof(e[0]), integerGreaterThan, selectionSort);
-    sortTest(f, sizeof(f)/sizeof(f[0]), sizeof(f[0]), stringLessThan, selectionSort);
-    sortTest(f, sizeof(f)/sizeof(f[0]), sizeof(f[0]), stringGreaterThan, selectionSort);
-    printf("Exiting selection sort tests...\n\n\n\n");
-
-    char g[]="ABCDEFGHIJKLPOwesrtyuodfgdgdggfgd";
-    int h[]={0, 9, 8 ,67, 68, 66, 34, 32, 1, 1, 0, 0, 0, -9, -80, -90};
-    char* i[]={"Television", "Rocky Balboa", "QWERTY", "Megaman ZX", "Johnny Bravo", "Computer Science"};
-
-    printf("Entering merge sort tests...\n\n");
-    sortTest(g, sizeof(g)/sizeof(g[0])-1, sizeof(g[0]), characterLessThan, mergeSort);
-    sortTest(g, sizeof(g)/sizeof(g[0])-1, sizeof(g[0]), characterGreaterThan, mergeSort);
-    sortTest(h, sizeof(h)/sizeof(h[0]), sizeof(h[0]), integerLessThan, mergeSort);
-    sortTest(h, sizeof(h)/sizeof(h[0]), sizeof(h[0]), integerGreaterThan, mergeSort);
-    sortTest(i, sizeof(i)/sizeof(i[0]), sizeof(i[0]), stringLessThan, mergeSort);
-    sortTest(i, sizeof(i)/sizeof(i[0]), sizeof(i[0]), stringGreaterThan, mergeSort);
-    printf("Exiting merge sort tests...\n\n\n\n");
-
-    char j[]="wdawfgxfdgfchfgchgcjvhjfgsedawetgrdgyrdgtrdghbbbbbadawdawrewreretdyruyjulkoxdfgsedfsdfvfg4545646475682352352567468572352352z";
-    int k[]={0, 2, 1, 567, -900, 90, 56, 23, -23, 47, 46, 46, 47, 50, 69, 68, 67, 66, 65, 44, 999, 888, 000, 6666};
-    char* l[]={"I love my life!", "Jammil", "Yvenie", "Ben 10", "Johnny Test"};
-
-    printf("Entering binary insertion sort tests...\n\n");
-    sortTest(j, sizeof(j)/sizeof(j[0])-1, sizeof(j[0]), characterLessThan, binaryInsertionSort);
-    sortTest(j, sizeof(j)/sizeof(j[0])-1, sizeof(j[0]), characterGreaterThan, binaryInsertionSort);
-    sortTest(k, sizeof(k)/sizeof(k[0]), sizeof(k[0]), integerLessThan, binaryInsertionSort);
-    sortTest(k, sizeof(k)/sizeof(k[0]), sizeof(k[0]), integerGreaterThan, binaryInsertionSort);
-    sortTest(l, sizeof(l)/sizeof(l[0]), sizeof(l[0]), stringLessThan, binaryInsertionSort);
-    sortTest(l, sizeof(l)/sizeof(l[0]), sizeof(l[0]), stringGreaterThan, binaryInsertionSort);
-    printf("Exiting binary insertion sort tests...\n");
+    ///This shows that the sortTest() function also works with the built-in C qsort() function.
+    sortTest(I, sizeof(I)/sizeof(const char*), sizeof(const char*), stringAscending, qsort);
 
     return 0;
 }
